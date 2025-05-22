@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest AI Projects Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #64748b;
+    --light: #f8fafc;
+    --dark: #0f172a;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --sidebar-width: 280px;
+    --animation-speed: 0.3s;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.title-link {
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.title-link:hover {
+    text-decoration: underline;
+}
+
+.title-link i {
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+body {
+    background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+    color: var(--gray-800);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, var(--dark) 0%, #1a1f2c 100%);
+    color: var(--light);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.sidebar-header {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.sidebar-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-container,
+.sort-container {
+    margin-bottom: 0.75rem;
+}
+
+.search-input,
+.sort-select {
+    width: 100%;
+    padding: 0.625rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--light);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus,
+.sort-select:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    outline: none;
+}
+
+.project-list {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0 -0.5rem;
+    padding: 0 0.5rem;
+}
+
+.project-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.project-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.project-item.active {
+    background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 1.5rem;
+    max-width: calc(100% - var(--sidebar-width));
+}
+
+.project-details {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.project-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+.project-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.project-body {
+    padding: 1.25rem;
+}
+
+.info-section {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.key-feature-item,
+.ai-roles-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-role-item {
+    position: relative;
+    padding: 0.75rem 0 0.75rem 2rem;
+    color: var(--gray-700);
+    line-height: 1.5;
+}
+
+.ai-role-item::before {
+    content: '•';
+    position: absolute;
+    left: 0.75rem;
+    color: var(--primary);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.metric-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-title {
+    color: var(--gray-500);
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    color: var(--gray-800);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.project-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    gap: 0.375rem;
+}
+
+.status-live {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+option {
+  background: #000;
+  color: #fff;
+}
+.status-development {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.pms-link-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.pms-link-section .section-title {
+    color: white;
+    opacity: 0.9;
+}
+
+.pms-description {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
+.pms-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.pms-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.pms-link i {
+    font-size: 0.75rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--gray-400);
+}
+
+/* New Project Form Styles */
+.new-project-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.new-project-btn:hover {
+    background: var(--primary-dark);
+}
+
+.project-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.project-form-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.project-form {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.form-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.close-form {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--gray-500);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.dynamic-inputs {
+    margin-bottom: 0.5rem;
+}
+
+.input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.add-input-btn {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.add-input-btn:hover {
+    background: var(--gray-200);
+}
+
+.remove-input-btn {
+    background: var(--gray-100);
+    color: var(--danger);
+    border: none;
+    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.cancel-btn {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.save-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.save-btn:hover {
+    background: var(--primary-dark);
+}
+
+.form-error {
+    color: var(--danger);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <i class="fas fa-robot"></i>
+                <span>Crest AI Projects</span>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search projects...">
+        </div>
+        
+        <div class="sort-container">
+            <select class="sort-select" id="sortSelect">
+                <option value="name">Sort by Name</option>
+                <option value="status">Sort by Status</option>
+                <option value="aws">Sort by AWS MRR Increase</option>
+            </select>
+        </div>
+        
+        <button class="new-project-btn" id="newProjectBtn" style="display:none ;">
+            <i class="fas fa-plus"></i>
+            <span>Add New Project</span>
+        </button>
+        
+        <ul class="project-list" id="projectList">
+            <!-- Project list items will be populated here -->
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="project-details" id="projectDetails">
+            <!-- Project details will be populated here -->
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Select a project to view details</h3>
+                <p>Choose a project from the list on the left to see its information</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="project-form-overlay" id="projectFormOverlay">
+        <div class="project-form">
+            <div class="form-header">
+                <h2 class="form-title">Add New Project</h2>
+                <button class="close-form" id="closeForm">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="newProjectForm">
+                <div class="form-group">
+                    <label class="form-label" for="projectName">Project Name*</label>
+                    <input type="text" id="projectName" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="projectStatus">Status*</label>
+                    <select id="projectStatus" class="form-select" required>
+                        <option value="live">Live</option>
+                        <option value="development">Development</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="projectDefinition">Definition*</label>
+                    <textarea id="projectDefinition" class="form-textarea" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Key Features*</label>
+                    <div id="keyFeaturesContainer" class="dynamic-inputs">
+                        <div class="input-row">
+                            <input type="text" class="form-input" name="keyFeatures[]">
+                            <button type="button" class="remove-input-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="addKeyFeature" class="add-input-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Feature</span>
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">AI Roles*</label>
+                    <div id="aiRolesContainer" class="dynamic-inputs">
+                        <div class="input-row">
+                            <input type="text" class="form-input" name="aiRoles[]">
+                            <button type="button" class="remove-input-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="addAiRole" class="add-input-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add AI Role</span>
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tech Stack*</label>
+                    <div id="techStackContainer" class="dynamic-inputs">
+                        <div class="input-row">
+                            <input type="text" class="form-input" name="techStack[]">
+                            <button type="button" class="remove-input-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="addTechStack" class="add-input-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Technology</span>
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="pmsLink">PMS Link</label>
+                    <input type="url" id="pmsLink" class="form-input" placeholder="https://pms.crestinfosystems.net/...">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="awsMrrIncrease">AWS MRR Increase</label>
+                    <input type="text" id="awsMrrIncrease" class="form-input" placeholder="e.g. 10-14% or N/A">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="awsAiCharges">AWS AI Charges</label>
+                    <input type="text" id="awsAiCharges" class="form-input" placeholder="e.g. $500/month or N/A">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelForm">Cancel</button>
+                    <button type="submit" class="save-btn">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Project data parsed from the PDF
+        const projects = [
+            {
+                id: 1,
+                name: "EngagedAI",
+                status: "live",
+                definition: ["- Web-based application designed and constructed to cater to the needs of car dealers.",
+                " - One of the key features of this application is its ability to facilitate the scheduling of appointments and communication through chat or call.",
+                "- Moreover, the application also allows car dealers to keep track of customer reviews from various popular platforms such as Google, Facebook, and Yelp."
+            ],
+                keyFeatures: [
+                    "Prospect Management (Opportunities)",
+                    "Analytics (KPIs, App Usage, and General Dashboard)",
+                    "Appointments Management and Campaign Management",
+                    "Reviews Management (Google, Facebook, Yelp, Dealer Rater, and Review Analytics)",
+                    "Chat Widget Management"
+                ],
+                aiRole: [
+                    "AI helps to identify inventory item names as per the database schema and create a query so that we can find available inventory from database and then send response to user.",
+                    "Using OpenAI Models APIs to draft messages to lead based on the past conversation and send automatic followup messages"
+                ],
+                techStack: [
+                    "Scrapy", "BeautifulSoup", "Zoom Meeting", "Zoom Calling", "Selenium", 
+                    "Elastic Search", "AWS Amplify", "OpenAI", "GraphQL", "AWS Lambda"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/92HpBS95j9",
+                marketingData: {
+                    dealerships: 33,
+                    locations: 104,
+                    leads: 55381,
+                    appointments: 106670,
+                    reviews: 30451,
+                    messages: 985282
+                },
+                awsMrrIncrease: "10-14%",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 2,
+                name: "Prismview",
+                status: "live",
+                definition: "SaaS Solution for EHS - Fostering Safety First Culture. This platform offers the functionality for creating assistants, enabling users to configure multiple assistants tailored to different purposes. These assistants, guided by the provided instructions, furnish accurate responses sourced from the designated knowledge base. The app is used field engineers and project managers in the construction and manufacturing industries. It helps provide on-demand safety protocols with organization-specific content that can be uploaded to the site. It also has features to report and respond to onsite incidents and follow-ups to take corrective actions.",
+                keyFeatures: [
+                    "Knowledgebase Management",
+                    "Knowledgebase Search",
+                    "Chat with Knowledgebase",
+                    "Configure Chat",
+                    "Workflow Management",
+                    "Custom workflows to simplify safety management and administration",
+                    "Assistant Management",
+                    "Role-based Access Control",
+                    "Subscription Management",
+                    "Incident Reporting",
+                    "Safety Guidelines",
+                    "OSHA Form Management",
+                    "Hindi Language",
+                    "Assistant chat",
+                    "Manage Dynamic Reactive Form",
+                    "On Demand and target training",
+                    "AI Safety Buddy",
+                    "Automate Industry And Legal Compliance Checks",
+                    "Intuitive Incident Reporting Buddy app",
+                    "Empower EHS, HR and Field Teams"
+                ],
+                aiRole: [
+                    "AI helps manage and search the knowledgebase, enabling users to quickly access safety protocols, guidelines, and specific organizational content. This includes chat-based interactions for guidance and support.",
+                    "AI assists in incident reporting by automating the process, providing real-time insights, and suggesting corrective actions based on previous reports or predefined workflows.",
+                    "AI acts as an Image analysis tool to fetch User details from the government documents provided during employee induction.",
+                    "AI ensures that safety practices align with industry and legal compliance (e.g., OSHA regulations) by automating checks and reporting deviations.",
+                    "AI Provide image analysis functionality for safety management. The AI will analyze images and offer safety recommendations or guidelines based on the contents of specific documents."
+                ],
+                techStack: [
+                    "Azure Open AI", "Azure Cognitive, Vector, and Hybrid search", "Azure Storage", 
+                    "Azure OCR (AI enrichment)", "Azure Document processer", "Azure Data source, Azure Indexer",
+                    "Notion", "Google Drive", "One Drive", "Stripe", "Azure Function", "Firebase",
+                    "Firebase push notification", "Realtime location tracking"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/yus0YPcQR4",
+                marketingData: {
+                    revenueIncrease1: "15-20% due to better customer retention",
+                    revenueIncrease2: "10-15% from new customer acquisitions",
+                    revenueIncrease3: "5-8% from Workflows Creation"
+                },
+                awsMrrIncrease: "N/A",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 3,
+                name: "ICloudNow VoiceBot",
+                status: "development",
+                definition: "AI-Powered Call Support System. We developed an intelligent call support system that enhances user experience by integrating with their calendars. The AI helps gather user calendar details, allowing for real-time analysis of availability. Acting as a smart assistant, the system is trained to suggest optimal appointment slots based on subscribers' calendar events. By facilitating seamless communication and providing accurate information regarding appointment bookings, this solution streamlines the scheduling process, making it easier for end users to manage their appointments efficiently. Also includes Restaurant Voice Call Bot that revolutionizes the dining experience by enabling customers to book tables and place orders through voice interactions.",
+                keyFeatures: [
+                    "Voice Call Agent",
+                    "Effortless Meeting Management: Schedule, reschedule, and cancel meetings with ease",
+                    "Web-Based Scheduling Agents",
+                    "AI Chat Scheduler and Knowledge Agents",
+                    "Restaurant Table Reservation",
+                    "Menu Order Placement for Restaurants",
+                    "Assistance in Selecting Food Menu Options"
+                ],
+                aiRole: [
+                    "AI helps us gather user calendar details, enabling the system to understand the availability of subscribers in real time.",
+                    "AI acts as a smart assistant, training a model to analyze calendar events and determine optimal times for booking appointments.",
+                    "AI offers personalized appointment scheduling, assisting end users by suggesting available slots based on the subscriber's calendar events, streamlining the booking process.",
+                    "AI facilitates seamless communication, ensuring that users receive timely and accurate information regarding appointment availability, enhancing the overall user experience.",
+                    "AI helps us facilitate table bookings by allowing users to interact with the system through voice commands, streamlining the reservation process.",
+                    "AI acts as a virtual assistant that has been trained on the restaurant's menu, enabling it to understand and respond to customer inquiries about available dishes.",
+                    "AI offers an interactive ordering experience, allowing users to place their orders simply by telling the bot their desired menu items, enhancing convenience and efficiency.",
+                    "AI enables seamless updates to the menu, as we provide detailed information to the system and continuously train the model, ensuring that users receive accurate and up-to-date options."
+                ],
+                techStack: [
+                    "Bland.AI", "Stripe", "Google Calendar", "Outlook Calender", 
+                    "Generative AI", "Open AI", "Python", "Flask", "ChatGPT"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/wBzcfCOWmK",
+                marketingData: {
+                    status: "Under development, no live customers yet"
+                },
+                awsMrrIncrease: "N/A",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 4,
+                name: "Knowlee",
+                status: "live",
+                definition: "Knowlee.ai offers AI-powered solutions to automate business processes. It utilizes AI agents to streamline operations, reduce costs, and enhance productivity by integrating with multiple data sources and business tools. The platform supports multimodal AI interpretation, connecting to various services like Gmail, Google Calendar, Microsoft, Twitter, LinkedIn, Discord, YouTube, Reddit, Trello, Slack, etc.",
+                keyFeatures: [
+                    "Knowledgebase Management (Files, Youtube, Google Drive, News, Twitter, Medium, PDF URL, OneDrive, ChatGPT, Github, Reddit, etc)",
+                    "AI Chat Assistants Management",
+                    "AI Processes Management",
+                    "Chat with Knowledgebase",
+                    "Billing Subscription Management"
+                ],
+                aiRole: [
+                    "Enhance your workflows with AI tools capable of understanding images, videos, text, and speech.",
+                    "In addition to uploading your own files, you can connect online data sources like socials, websites, databases to continuously expand your AI's knowledge base.",
+                    "Integrate with any third-party API or data provider, ensuring your AI capabilities can evolve alongside your growing business needs.",
+                    "Set reminders, automate reporting, trigger workflows and more through Knowlee's scheduling capabilities.",
+                    "Understand AI adoption and process optimizations via intuitive dashboards with detailed tracking and reporting."
+                ],
+                techStack: [
+                    "Twitter", "LinkedIn", "Discord", "Notion", "Slack", "Trello", "Medium", 
+                    "Google", "Telegram", "Stripe", "Tolt.io", "Brevo", "OpenAI", "Azure OpenAI"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/AlKiqJhYRQ",
+                marketingData: {},
+                awsMrrIncrease: "N/A",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 5,
+                name: "CanmoreAI",
+                status: "development",
+                definition: "The CanmoreAI Web Application is a sophisticated AI-driven tool designed to assist organizations in developing successful federal funding proposals. Writing a strong proposal that aligns with the requirements and evaluation criteria of a Request for Proposal (RFP) can be a complex and time-consuming process. CanmoreAI addresses this challenge by guiding users through each stage of proposal development, ensuring that they create comprehensive and competitive submissions. The platform provides a structured, user-friendly experience that leverages cutting-edge AI technology to analyze and understand the user's organization, key personnel, and prior experiences. By integrating these insights into the proposal writing process, CanmoreAI helps organizations produce proposals that are not only well-written but also strategically aligned with funding requirements.",
+                keyFeatures: [
+                    "Knowledge Base Integration",
+                    "Resume & Experience Analysis",
+                    "Idea Development Assistance",
+                    "Proposal Writing Guidance",
+                    "Evaluation Criteria Alignment",
+                    "Page Count & Word Limit Management",
+                    "Word Document Generation",
+                    "Agent-Based LLM Integration"
+                ],
+                aiRole: [
+                    "AI assists in evaluating documents in the knowledge base, extracting key information about the organization, personnel, and past performance.",
+                    "AI reviews resumes to identify the most relevant skills and qualifications, ensuring alignment with proposal requirements.",
+                    "AI provides structured guidance for each section of the proposal, suggesting ideas and content based on best practices and evaluation criteria.",
+                    "AI offers real-time feedback on proposal structure, language, and tone, helping users craft professional, persuasive proposals.",
+                    "AI agents are capable of performing specialized tasks like document management and proposal section development, making the writing process more efficient."
+                ],
+                techStack: [
+                    "Python", "Flask", "PostgreSQL", "OpenAI", "Langchain", "Pinecone", "React.js"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/projects/246/view",
+                marketingData: {
+                    status: "Not Live yet, in development phase and deployed on GCP"
+                },
+                awsMrrIncrease: "N/A",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 6,
+                name: "AI Chatbuilders",
+                status: "live",
+                definition: "AI Chat Builders is a platform designed to create custom AI-powered chatbots for websites. The chatbots are trained using the business's website content and documents, ensuring accurate and relevant responses to customer inquiries. The system is designed for easy setup, requiring no technical AI knowledge, and supports multiple languages. Additionally, it offers users the option to modify the chatbot, allowing them to customize elements such as the chatbot icon, message text color, and other settings. The users can embed these personalized chatbots into their business websites.",
+                keyFeatures: [
+                    "Personalized Chatbot Creation",
+                    "Chatbot Training and Retraining",
+                    "ChatBot Branding Feature",
+                    "ChatBot Questions and Response Logs",
+                    "ChatBot Team Management",
+                    "Chat with Chatbot",
+                    "ChatBot Embedding Functionality"
+                ],
+                aiRole: [
+                    "AI helps to deliver instant, accurate, and personalized support to every customer with a AI chatbot that's been trained on your website and document."
+                ],
+                techStack: [
+                    "ChatGPT API", "Stripe", "LangChain", "OpenAI", "BeautifulSoup"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/aYtXg8cKKY",
+                marketingData: {},
+                awsMrrIncrease: "N/A",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 7,
+                name: "Openessayme",
+                status: "development",
+                definition: "OpenEssayMe was created and designed by a dedicated team of experienced educators and professionals with a rich history of teaching and preparing students for major exams like the GED, SAT, and more.",
+                keyFeatures: [
+                    "AI Exam Generator",
+                    "AI Chatbot",
+                    "Online Essay Practice",
+                    "Online Grammar Practice",
+                    "24/7 AI Tutor",
+                    "AI Feedback Mechanism"
+                ],
+                aiRole: [
+                    "AI generates personalized exam questions and practice tests tailored to users' needs, simulating real exam conditions and adjusting difficulty levels.",
+                    "AI chatbot offers instant support by answering queries and providing guidance on various topics, delivering immediate feedback and explanations.",
+                    "AI analyzes essay submissions in real-time, suggesting improvements in structure, grammar, and argumentation, while also providing personalized grammar exercises based on user errors.",
+                    "The AI tutor acts as a virtual assistant, available anytime to help students study, answer questions, and provide detailed feedback on essays and overall exam performance for targeted improvement."
+                ],
+                techStack: [
+                    "Python-Django", "ReactJS", "PostgreSQL", "OpenAI", "Stripe Integration"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/AXE9Buv3rK",
+                marketingData: {
+                    status: "Under development, no live customers yet"
+                },
+                awsMrrIncrease: "N/A",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 8,
+                name: "AiMagic",
+                status: "live",
+                definition: "AI Magic is the art generation tool for kids aged 4-12! With our cutting-edge AI technology, the child can easily create their own unique artwork, from colorful drawings to vibrant paintings. AI Magic provides an intuitive and engaging platform for young artists to explore their imaginations and express themselves like never before. Unlike other language learning apps, our app features a kid-friendly chat bot named Magic Chat that kids can speak to directly using their own voice. With natural language processing (NLP), Magic Chat can understand what kids are saying and respond in English, making the learning experience more immersive and authentic.",
+                keyFeatures: [
+                    "Social media login",
+                    "OpenAI Text generative API",
+                    "OpenAI text-to-speech and speech-to-text",
+                    "Generative AI image generation",
+                    "Storybook creation",
+                    "AI Voice chatbot",
+                    "3D animation using Unity development",
+                    "Image OCR and object detection using Google Vision AI API",
+                    "Stripe subscription payment flow"
+                ],
+                aiRole: [
+                    "AI helps to create a voice-based bot for the kids, we are using AI to convert voice messages to text and then generate the response to the user in audio format.",
+                    "AI analyzes user writing and suggests improvements in structure, grammar, and tone also providing grammar enhancement.",
+                    "AI generates images based on input text provided by the user.",
+                    "AI identifies objects from images and offers insightful guidance, helping users gain more knowledge and understanding about the objects they interact with."
+                ],
+                techStack: [
+                    "OpenAI API", "OpenAIwhisper API", "DALL·E 2 Integration", "Stable diffusion API",
+                    "Google Document API", "Google Vision AI API", "Stripe API", 
+                    "Unity development with Flutter", "MessageBird API"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/Uh1IK3bHqd",
+                marketingData: {
+                    users: 16865,
+                    revenue: "$1400",
+                    note: "Most users on free version"
+                },
+                awsMrrIncrease: "2-3%",
+                awsAiCharges: "N/A"
+            },
+            {
+                id: 9,
+                name: "LivestockPro",
+                status: "live",
+                definition: "LiveStock Pro is a simple-to-use, secure, cloud-based Web and Mobile Application that enables users to easily record individual livestock data such as medical batch, weight, pregnancy status, new births, genetics, condition, sale price, and general notes.",
+                keyFeatures: [
+                    "Medical and Chemical batch Management",
+                    "Machinery Management",
+                    "Planner and To-Do List: Schedule tasks and reminders",
+                    "Rain Gauge: Historical input and real-time comparison",
+                    "Sales and Revenue Tracking: Monitor market sales and farm income",
+                    "Farm Management",
+                    "Finance Management",
+                    "Farm AI"
+                ],
+                aiRole: [
+                    "AI helps us to automatically identify individual cows by recognizing their unique facial features. Through machine learning, the system learns from images and improves its accuracy over time, making cattle management easier and more efficient without manual intervention.",
+                    "The AI assistant acts as a virtual helper, available anytime to support farmers by answering questions, providing insights on livestock or crops, and offering detailed feedback on farm operations for improved productivity and decision-making."
+                ],
+                techStack: [
+                    "Stripe", "Google Map", "OpenAI", "LLM", "Python", "Flutter", "Image Recognition"
+                ],
+                pmsLink: "https://pms.crestinfosystems.net/api/publiclink/FgwuYe8cUI",
+                marketingData: {
+                    users: 16865,
+                    revenue: "$1400",
+                    note: "Most users on free version"
+                },
+                awsMrrIncrease: "2-3%",
+                awsAiCharges: "N/A"
+            },
+            {
+                "id": 9,
+                "name": "Angelina Project",
+                "status": "live",
+                "definition": [
+                "- Angelina AI Companion for Office Management",
+                "- The user sends an audio message via WhatsApp.",
+                "- Twilio receives the message and triggers a web hook to server.",
+                "- Download the audio file using the media URL provided by Twilio.",
+                "- The audio file is passed to Whisper for transcription.",
+                "- The transcribed text is sent back to the user as a WhatsApp message.",
+                "- From the WhatsApp Audio/Text message, create the task in Asana"
+                ],
+                "keyFeatures": [
+                "Receive WhatsApp Audio Messages",
+                "Transcribe Audio Using Whisper",
+                "Create Task in Asana"
+                ],
+                "aiRole": [
+                "Speech-to-Text Conversion (Whisper AI): The AI is responsible for processing the audio message received via WhatsApp. Using Whisper, it transcribes the audio into text, making the content of the message understandable in a textual form for further processing."
+                ],
+                "techStack": [
+                "Twilio with WhatsApp", 
+                "Asana", 
+                "Whisper AI for Audio transcribe to text"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/Ju2w30wFrj",
+                "marketingData": {
+                "users": 16865,
+                "revenue": "$1400",
+                "note": "Most users on free version"
+                },
+                "awsMrrIncrease": "2-3%",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 10,
+                "name": "AIREA Solutions",
+                "status": "development",
+                "definition": [
+                "- The AIREA Solutions outlines a cutting-edge platform leveraging AI to enhance digital marketing strategies, particularly for content creation and campaign management.",
+                "- AIREA is designed to help businesses optimize their marketing processes by using artificial intelligence to automate various tasks, allowing marketing teams to focus on high-impact activities."
+                ],
+                "keyFeatures": [
+                "AI Chatbot for campaign generation",
+                "Campaign Creation",
+                "Brief Creation",
+                "Copy Selection",
+                "Template Creation",
+                "Final Review",
+                "Model Training",
+                "Knowledge Base",
+                "Brand Guidelines",
+                "Brand Voice",
+                "SaaS based"
+                ],
+                "aiRole": [
+                "AI generates high-quality marketing content, automates campaign management, and simplifies template design, allowing teams to focus on strategic tasks.",
+                "It analyzes data to identify trends and customer preferences using prompts, enabling data-driven decision-making and optimizing campaign performance.",
+                "AI evaluates copy options based on performance metrics to select the most effective content for campaigns, allowing users to change them with their preferences.",
+                "It enhances personalized marketing experiences by tailoring content to user behavior and preferences while providing real-time feedback for adjustments."
+                ],
+                "techStack": [
+                "Open AI",
+                "Python",
+                "Flask",
+                "ChatGPT",
+                "VueJS (Pinia, Flowbite - Tailwind)",
+                "Supabase",
+                "Stripe"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/v8eNM3RXwb",
+                "marketingData": {
+                "users": 0,
+                "revenue": "$0",
+                "note": "Under development, might go live in February"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 11,
+                "name": "InsourceRx",
+                "status": "live",
+                "definition": [
+                "Custom AI Assistant Integration at InsourceRx.com. The integration focuses on analyzing CSV files uploaded by users for advanced data analysis.",
+                "It uses OpenAI's assistance API to analyze CSV and then provide details based on the CSV analytics. We do have prompt library using that users can select any prompt and then they get the response with details."
+                ],
+                "keyFeatures": [
+                "Chat assistant feature",
+                "CSV analysis",
+                "Prompt Library",
+                "OpenAI Assistant API"
+                ],
+                "aiRole": [
+                "AI helps us efficiently analyze CSV files by providing advanced data insights at InsourceRx.com. It acts as a smart assistant that processes user-uploaded files, leveraging OpenAI's API to deliver detailed analytics.",
+                "AI offers a prompt library, enabling users to select specific prompts and receive tailored responses based on their data, streamlining the entire analysis process."
+                ],
+                "techStack": [
+                "OpenAI Assistant API",
+                "Python",
+                "Fast API",
+                "ChatGPT"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/H9X5YFTC5A",
+                "marketingData": {
+                "users": "Internal tool",
+                "revenue": "N/A",
+                "note": "More than 100 CSVs processed, helping to optimize work"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 12,
+                "name": "Merch Dominator",
+                "status": "live",
+                "definition": [
+                "- Merch Dominator is a state-of-the-art platform designed specifically for creators and sellers in the Print on Demand (POD) industry, with a strong focus on maximizing sales and efficiency on platforms like Merch By Amazon, Redbubble, and more.",
+                "- By leveraging advanced technologies such as artificial intelligence, data analytics, and automation, Merch Dominator empowers users to optimize their product offerings, stay ahead of market trends, and efficiently manage their POD business operations.",
+                "- The Listing Creator crafts compelling descriptions using ChatGPT in the system.",
+                "- The platform collects featured designs from Amazon, and RedBubble using a web scraper that runs daily."
+                ],
+                "keyFeatures": [
+                "Product search",
+                "Merch By Amazon POD Products Scraping",
+                "RedBubble POD Products Scraping",
+                "Etsy POD Products",
+                "POD Inspiration",
+                "Upcoming Events",
+                "Events Calendar",
+                "Trademark Check",
+                "Trends",
+                "AI Listing Creator",
+                "AI Niche and Quote Generator"
+                ],
+                "aiRole": [
+                "AI is used to craft compelling product descriptions, titles, and keywords. This helps sellers optimize their listings on platforms like Merch By Amazon and RedBubble by generating engaging content that improves visibility and sales potential.",
+                "AI processes and analyzes vast amounts of data collected through product scraping (Merch By Amazon, RedBubble, Etsy) and market trends. It helps users understand consumer behavior, forecast market demand, and identify emerging trends in the POD space."
+                ],
+                "techStack": [
+                "Tapfiliate",
+                "Stripe",
+                "MailerLite",
+                "Etsy API",
+                "KeywordsEverywhere",
+                "Google Trends",
+                "ChatGPT",
+                "FastAPI",
+                "Scrapy",
+                "Playwright",
+                "Elastic Search",
+                "Redis"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/cf7iCVqRmG",
+                "marketingData": {
+                "users": 1450,
+                "revenue": "N/A",
+                "note": "Subscribed users using the AI services for product content generation"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 13,
+                "name": "Benchmark Intelligence",
+                "status": "live",
+                "definition": [
+                "- Benchmark Intelligence is a customer feedback platform designed to help brick-and-mortar businesses capture, analyze, and act on customer feedback in real-time.",
+                "- The platform uses automated SMS surveys to gather immediate customer insights, enabling businesses to address concerns quickly and improve the overall customer experience."
+                ],
+                "keyFeatures": [
+                "AI-driven sentiment analysis",
+                "Real-time customer engagement through EngageChat",
+                "Automated Google review requests",
+                "Blacklist Number"
+                ],
+                "aiRole": [
+                "AI help here to check content if its positive or negative sentiment. Used for data analysis"
+                ],
+                "techStack": [
+                "Stripe",
+                "Twilio",
+                "Google Review",
+                "SendGrid",
+                "Google API",
+                "GoLang",
+                "Heroku"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/5V1HwglNlb",
+                "marketingData": {
+                "users": "N/A",
+                "revenue": "N/A",
+                "note": "Information not provided"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 14,
+                "name": "Espacios GPT",
+                "status": "live",
+                "definition": [
+                "Objective: To develop a specialized Fine-tuned GPT Model-powered digital marketing consultant that aligns with the branding, tone, and expertise of Espacios Business Media. This AI model will serve as a digital marketing advisor, accessible via API from a website or other platforms, to provide personalized recommendations and strategies for prospects and clients.",
+                "Purpose: The tool is designed to streamline access to tailored digital marketing advice, helping clients and prospects make informed decisions in real time. By embedding Espacios Business Media's unique approach, insights, and tone, the AI aims to strengthen client relationships and position the agency as an innovative leader in digital marketing consultation."
+                ],
+                "keyFeatures": [
+                "API Integration",
+                "Frontend Interface",
+                "Document Upload Capability",
+                "Authentication and User Management",
+                "Admin Dashboard for AI Training"
+                ],
+                "aiRole": [
+                "Knowledge Representation: The AI will represent the collective marketing expertise of Espacios Business Media, offering expert guidance in various aspects of digital marketing.",
+                "Personalization Engine: Using proprietary agency data and client inputs, the AI adapts responses to specific use cases, making advice more relevant and actionable for each client.",
+                "Insight Generator: As a virtual consultant, the AI will generate actionable insights, suggestions, and answers to clients' questions based on agency-provided content, industry knowledge, and learned prompts.",
+                "Brand Ambassador: Beyond technical knowledge, the AI embodies Espacios Business Media's tone and personality, creating a branded user experience that resonates with clients and prospects."
+                ],
+                "techStack": [
+                "AI Model: gpt 3.5 turbo 0125",
+                "Backend Server: Laravel (PHP)",
+                "Frontend: HTML, CSS, JavaScript (with AJAX for dynamic interactions)",
+                "OpenAI API: For natural language processing",
+                "PDF Generation Library: Dompdf (for Laravel)"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/bNOhgkDpLg",
+                "marketingData": {
+                "users": "N/A",
+                "revenue": "N/A",
+                "note": "Information not provided on leads or content delivery"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 15,
+                "name": "Daisy AI",
+                "status": "development",
+                "definition": [
+                "The goal of this project is to build an MVP for a Personal Assistant Mobile App with a Daisy interface that helps users manage their daily activities effectively. The app provides 24-hour activity tracking, real-time scheduling, and personalized AI-driven recommendations to optimize time management and ensure efficient task handling."
+                ],
+                "keyFeatures": [
+                "Voice and Text Input",
+                "Daisy Interface for Task Management",
+                "AI Scheduling Assistant",
+                "Calendar Synchronization",
+                "Weekly Activity Reports",
+                "Stripe Subscription Management",
+                "Smart Notifications",
+                "Wearable and App Integration"
+                ],
+                "aiRole": [
+                "Task Categorization: GPT-4 processes inputs to assign tasks to categories and schedules them intelligently.",
+                "Personalized Recommendations: Analyzes user habits and suggests optimizations (e.g., time blocking, scheduling breaks).",
+                "Pattern Recognition: Identifies recurring activities and suggests habit formation.",
+                "Adaptive Learning: Learns from user feedback to refine future suggestions and classifications.",
+                "Smart Conflict Resolution: Identifies and resolves scheduling overlaps dynamically.",
+                "Behavior Analysis: Generates insights to encourage balanced activity distribution across categories."
+                ],
+                "techStack": [
+                "Whisper API: For speech-to-text transcription",
+                "GPT-4: For task categorization, scheduling, and personalized recommendations",
+                "Google Calendar/Apple Calendar: For syncing tasks and schedules",
+                "Stripe: For payment processing and subscription management",
+                "Frontend: Flutter",
+                "Backend: Python (Django)",
+                "Database: MYSQL"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/5GAzH5MYsm",
+                "marketingData": {
+                "users": 0,
+                "revenue": "$0",
+                "note": "Still in development phase"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 16,
+                "name": "Syllabus AI",
+                "status": "live",
+                "definition": [
+                "SyllabusAI is designed to enhance academic planning and time management by allowing students to seamlessly integrate their course syllabi into personal calendars and build personalized study plans. The platform leverages AI to streamline academic scheduling, generate customized study schedules, and provide real-time calendar synchronization for students.",
+                "By combining syllabus parsing, calendar integration, and personalized study planning, SyllabusAI empowers students to stay organized, optimize their study time, and meet academic deadlines efficiently."
+                ],
+                "keyFeatures": [
+                "Automated Syllabus Parsing",
+                "Personalized Study Plan",
+                "Calendar Integration",
+                "ICS File Generation",
+                "User-Friendly Interface",
+                "Notifications and Reminders"
+                ],
+                "aiRole": [
+                "Information Extraction: The AI component employs natural language processing techniques to accurately extract relevant details from diverse syllabus formats.",
+                "Data Structuring: The AI organizes extracted information into a structured format suitable for calendar integration, ensuring accuracy and consistency."
+                ],
+                "techStack": [
+                "Frontend: Next.js",
+                "Backend: Python's FastAPI framework",
+                "Database: PostgreSQL",
+                "AI Model: OpenAI's language model",
+                "Calendar Integration: ICS file generation"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/8EBgo0hJx3",
+                "marketingData": {
+                "users": 45,
+                "revenue": "N/A",
+                "note": "Launched last month, 49 syllabi processed using the AI tool"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            },
+            {
+                "id": 17,
+                "name": "ETraining Chatbot",
+                "status": "live",
+                "definition": [
+                "eTraining AI Chatbot offers below functionality",
+                "Admin and Safety Manager Capabilities: - Admins and safety managers can create multiple user profiles. - They can add and manage multiple knowledge bases.",
+                "User and Knowledge Base Management: - Knowledge bases can be assigned to specific users.",
+                "Chatbot Interaction: - Users can chat with the chatbot assistant based on the knowledge base assigned to them."
+                ],
+                "keyFeatures": [
+                "Knowledgebase Management",
+                "Knowledgebase Search",
+                "Chat with Knowledgebase",
+                "Chat Assistant Management"
+                ],
+                "aiRole": [
+                "AI helps to manage and search the knowledgebase, enabling users to efficiently access their assigned knowledge base and retrieve answers by searching across uploaded documents within a specific knowledgebase. Additionally, it assigns a meaningful name to each chat, making it easier to identify the required conversation from the list of previous chats."
+                ],
+                "techStack": [
+                "OpenAI",
+                "Langchain"
+                ],
+                "pmsLink": "https://pms.crestinfosystems.net/api/publiclink/nm6r0bmlEP",
+                "marketingData": {
+                "users": "N/A",
+                "revenue": "N/A",
+                "note": "Information not provided"
+                },
+                "awsMrrIncrease": "N/A",
+                "awsAiCharges": "N/A"
+            }
+           
+        ]
+
+        // Function to display project details
+        function displayProjectDetails(project) {
+            const projectDetails = document.getElementById('projectDetails');
+            
+            const statusClass = project.status === 'live' ? 'status-live' : 'status-development';
+            
+            let marketingDataHtml = '';
+            if (project.marketingData) {
+                marketingDataHtml = '<div class="metrics">';
+                for (const [key, value] of Object.entries(project.marketingData)) {
+                    marketingDataHtml += `
+                        <div class="metric-card">
+                            <div class="metric-title">${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</div>
+                            <div class="metric-value">${value}</div>
+                        </div>
+                    `;
+                }
+                marketingDataHtml += '</div>';
+            }
+            
+            projectDetails.innerHTML = `
+                <div class="project-header">
+                    ${project.pmsLink ? 
+                        `<h1 class="project-title">
+                            <a href="${project.pmsLink}" target="_blank" class="title-link">
+                                ${project.name}
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </h1>` :
+                        `<h1 class="project-title">${project.name}</h1>`
+                    }
+                    <div class="project-subtitle">${project.definition}</div>
+                    <span class="project-status ${statusClass}">${project.status.toUpperCase()}</span>
+                </div>
+                <div class="project-body">
+                   
+                    <div class="info-section">
+                        <h2 class="section-title"><i class="fas fa-star"></i>Key Features</h2>
+                        <div class="info-grid">
+                            ${project.keyFeatures.map(feature => `
+                                <div class="key-feature-item">
+                                    <i class="fas fa-check"></i> ${feature}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-robot"></i>
+                            AI Roles
+                        </h3>
+                        <ul class="ai-roles-list">
+                            ${project.aiRole.map(role => `
+                                <li class="ai-role-item">${role}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h2 class="section-title"><i class="fas fa-code"></i>Tech Stack</h2>
+                        <div class="tag-container">
+                            ${project.techStack.map(tech => `
+                                <span class="tag">${tech}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                </div>
+            `;
+        }
+
+        // Function to populate project list
+        function populateProjectList() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '';
+            
+            projects.forEach(project => {
+                const li = document.createElement('li');
+                li.className = 'project-item';
+                li.innerHTML = `
+                    <i class="fas fa-${project.status === 'live' ? 'circle-check' : 'clock'}"></i>
+                    <span>${project.name}</span>
+                `;
+                
+                li.addEventListener('click', () => {
+                    // Remove active class from all items
+                    document.querySelectorAll('.project-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked item
+                    li.classList.add('active');
+                    
+                    // Display project details
+                    displayProjectDetails(project);
+                });
+                
+                projectList.appendChild(li);
+            });
+        }
+
+        // Function to filter projects
+function filterProjects(searchTerm) {
+    const filteredProjects = projects.filter(project => {
+        const searchFields = [
+            project.name,
+            project.definition,
+            project.status,
+            ...(project.keyFeatures || []),
+            ...(project.techStack || []),
+            ...(project.aiRole || [])
+        ];
+        
+        return searchFields.some(field => 
+            String(field).toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    });
+    
+    const projectList = document.getElementById('projectList');
+    projectList.innerHTML = '';
+    
+    if (filteredProjects.length === 0) {
+        projectList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>No Results Found</h3>
+                <p>No projects found matching "${searchTerm}"</p>
+            </div>
+        `;
+        // Clear the main content area when no results are found
+        document.getElementById('projectDetails').innerHTML = '';
+        return;
+    }
+    
+    filteredProjects.forEach(project => {
+        const li = document.createElement('li');
+        li.className = 'project-item';
+        li.innerHTML = `
+            <i class="fas fa-${project.status === 'live' ? 'circle-check' : 'clock'}"></i>
+            <span>${project.name}</span>
+        `;
+        
+        li.addEventListener('click', () => {
+            document.querySelectorAll('.project-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            li.classList.add('active');
+            displayProjectDetails(project);
+        });
+        
+        projectList.appendChild(li);
+    });
+    
+    // Display the first project in the filtered list
+    if (filteredProjects.length > 0) {
+        displayProjectDetails(filteredProjects[0]);
+        projectList.firstChild.classList.add('active');
+    }
+}
+   
+
+        // Function to sort projects
+        function sortProjects(sortBy) {
+            const sortedProjects = [...projects];
+            
+            switch(sortBy) {
+                case 'name':
+                    sortedProjects.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'status':
+                    // Sort by status (live first, then development)
+                    sortedProjects.sort((a, b) => {
+                        if (a.status === b.status) return 0;
+                        return a.status === 'live' ? -1 : 1;
+                    });
+                    break;
+                case 'aws':
+                    sortedProjects.sort((a, b) => {
+                        const getNumericValue = (str) => {
+                            if (str === 'N/A') return -1;
+                            const match = str.match(/(\d+)/);
+                            return match ? parseInt(match[0]) : -1;
+                        };
+                        return getNumericValue(b.awsMrrIncrease) - getNumericValue(a.awsMrrIncrease);
+                    });
+                    break;
+            }
+            
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '';
+            
+            sortedProjects.forEach(project => {
+                const li = document.createElement('li');
+                li.className = 'project-item';
+                li.innerHTML = `
+                    <i class="fas fa-${project.status === 'live' ? 'circle-check' : 'clock'}"></i>
+                    <span>${project.name}</span>
+                `;
+                
+                li.addEventListener('click', () => {
+                    document.querySelectorAll('.project-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    li.classList.add('active');
+                    displayProjectDetails(project);
+                });
+                
+                projectList.appendChild(li);
+            });
+        }
+
+        // Project Form Functionality
+        function setupProjectForm() {
+            const newProjectBtn = document.getElementById('newProjectBtn');
+            const projectFormOverlay = document.getElementById('projectFormOverlay');
+            const closeForm = document.getElementById('closeForm');
+            const cancelForm = document.getElementById('cancelForm');
+            const newProjectForm = document.getElementById('newProjectForm');
+            
+            // Dynamic input containers
+            const keyFeaturesContainer = document.getElementById('keyFeaturesContainer');
+            const aiRolesContainer = document.getElementById('aiRolesContainer');
+            const techStackContainer = document.getElementById('techStackContainer');
+            
+            // Add buttons
+            const addKeyFeature = document.getElementById('addKeyFeature');
+            const addAiRole = document.getElementById('addAiRole');
+            const addTechStack = document.getElementById('addTechStack');
+            
+            // Open form
+            newProjectBtn.addEventListener('click', () => {
+                projectFormOverlay.classList.add('active');
+                // Add initial empty fields
+                addDynamicInput(keyFeaturesContainer, 'keyFeature');
+                addDynamicInput(aiRolesContainer, 'aiRole');
+                addDynamicInput(techStackContainer, 'techStack');
+            });
+            
+            // Close form
+            closeForm.addEventListener('click', closeProjectForm);
+            cancelForm.addEventListener('click', closeProjectForm);
+            
+            // Add dynamic inputs
+            addKeyFeature.addEventListener('click', () => addDynamicInput(keyFeaturesContainer, 'keyFeature'));
+            addAiRole.addEventListener('click', () => addDynamicInput(aiRolesContainer, 'aiRole'));
+            addTechStack.addEventListener('click', () => addDynamicInput(techStackContainer, 'techStack'));
+            
+            // Form submission
+            newProjectForm.addEventListener('submit', handleFormSubmit);
+            
+            function closeProjectForm() {
+                projectFormOverlay.classList.remove('active');
+                newProjectForm.reset();
+                // Clear dynamic inputs
+                keyFeaturesContainer.innerHTML = '';
+                aiRolesContainer.innerHTML = '';
+                techStackContainer.innerHTML = '';
+            }
+            
+            function addDynamicInput(container, type) {
+                const inputRow = document.createElement('div');
+                inputRow.className = 'input-row';
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-input';
+                input.name = type + '[]';
+                input.required = true;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-input-btn';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.addEventListener('click', () => {
+                    // Don't remove if it's the last input
+                    if (container.querySelectorAll('.input-row').length > 1) {
+                        container.removeChild(inputRow);
+                    }
+                });
+                
+                inputRow.appendChild(input);
+                inputRow.appendChild(removeBtn);
+                container.appendChild(inputRow);
+            }
+            
+            function handleFormSubmit(e) {
+                e.preventDefault();
+                
+                // Validate form
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Get form values
+                const newProject = {
+                    id: projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1,
+                    name: document.getElementById('projectName').value.trim(),
+                    status: document.getElementById('projectStatus').value,
+                    definition: document.getElementById('projectDefinition').value.trim(),
+                    keyFeatures: Array.from(keyFeaturesContainer.querySelectorAll('input')).map(input => input.value.trim()),
+                    aiRole: Array.from(aiRolesContainer.querySelectorAll('input')).map(input => input.value.trim()),
+                    techStack: Array.from(techStackContainer.querySelectorAll('input')).map(input => input.value.trim()),
+                    pmsLink: document.getElementById('pmsLink').value.trim() || null,
+                    marketingData: {},
+                    awsMrrIncrease: document.getElementById('awsMrrIncrease').value.trim() || 'N/A',
+                    awsAiCharges: document.getElementById('awsAiCharges').value.trim() || 'N/A'
+                };
+                
+                // Add to projects array
+                projects.push(newProject);
+                
+                // Save to file (in a real environment, this would be an API call)
+                saveProjectsToFile();
+                
+                // Update UI
+                populateProjectList();
+                
+                // Close form
+                closeProjectForm();
+                
+                // Show the newly added project
+                const projectItems = document.querySelectorAll('.project-item');
+                projectItems[projectItems.length - 1].click();
+            }
+            
+            function validateForm() {
+                let isValid = true;
+                
+                // Check required fields
+                const requiredFields = [
+                    { id: 'projectName', label: 'Project Name' },
+                    { id: 'projectDefinition', label: 'Definition' }
+                ];
+                
+                requiredFields.forEach(field => {
+                    const input = document.getElementById(field.id);
+                    if (!input.value.trim()) {
+                        showError(input, `${field.label} is required`);
+                        isValid = false;
+                    } else {
+                        clearError(input);
+                    }
+                });
+                
+                // Check dynamic inputs
+                const dynamicContainers = [
+                    { container: keyFeaturesContainer, label: 'Key Features' },
+                    { container: aiRolesContainer, label: 'AI Roles' },
+                    { container: techStackContainer, label: 'Tech Stack' }
+                ];
+                
+                dynamicContainers.forEach(item => {
+                    const inputs = item.container.querySelectorAll('input');
+                    let hasValue = false;
+                    
+                    inputs.forEach(input => {
+                        if (input.value.trim()) {
+                            hasValue = true;
+                            clearError(input);
+                        }
+                    });
+                    
+                    if (!hasValue) {
+                        showError(inputs[0], `At least one ${item.label} is required`);
+                        isValid = false;
+                    }
+                });
+                
+                return isValid;
+            }
+            
+            function showError(input, message) {
+                // Remove existing error
+                clearError(input);
+                
+                // Add error message
+                const errorElement = document.createElement('div');
+                errorElement.className = 'form-error';
+                errorElement.textContent = message;
+                
+                input.parentNode.appendChild(errorElement);
+                input.style.borderColor = 'var(--danger)';
+            }
+            
+            function clearError(input) {
+                const parent = input.parentNode;
+                const errorElement = parent.querySelector('.form-error');
+                
+                if (errorElement) {
+                    parent.removeChild(errorElement);
+                }
+                
+                input.style.borderColor = '';
+            }
+            
+            function saveProjectsToFile() {
+                // In a browser environment, we can't directly save to a file
+                // This would typically be handled by a server-side API
+                // For demonstration, we'll show an alert
+                alert('Project saved successfully! In a real environment, this would save to the server.');
+                
+                // For a real implementation, you would use fetch or XMLHttpRequest to send the data to a server
+                // Example:
+                // fetch('/api/save-projects', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify(projects)
+                // })
+                // .then(response => response.json())
+                // .then(data => console.log('Success:', data))
+                // .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Add event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.trim();
+            filterProjects(searchTerm);
+        });
+
+        document.getElementById('sortSelect').addEventListener('change', (e) => {
+            sortProjects(e.target.value);
+        });
+
+        // Initialize form functionality after the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial population of project list
+            populateProjectList();
+            
+            // Setup project form
+            setupProjectForm();
+        });
+
+        </script>
+    </body>
+</html>
