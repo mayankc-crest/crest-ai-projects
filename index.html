@@ -393,7 +393,37 @@
     </main>
   </div>
 
-  <script>
+ <script>
+// Disable Right-Click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// Disable Developer Tools Shortcuts
+document.onkeydown = function(e) {
+    // F12
+    if (e.keyCode == 123) {
+        return false;
+    }
+    // Ctrl+Shift+I
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+        return false;
+    }
+    // Ctrl+Shift+J
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+        return false;
+    }
+    // Ctrl+U
+    if (e.ctrlKey && e.keyCode == 85) {
+        return false;
+    }
+    // Ctrl+Shift+C (Inspect)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 67) {
+        return false;
+    }
+};
+
+
     const API_KEY = 'AIzaSyD5FqS1JVGOwT-zx99TZk1hBFnoHaSqeTA';
     const spreadsheetId = '1stuFmo3MLchcJXpjg-xwBiuj4_4BkiRHZx-RuPwZQqA';
     const range = 'Sheet1!A:F';
